@@ -23,6 +23,7 @@
  */
 namespace Aaugustyniak\ParamsCodecBundle\Codec\Impl;
 
+use Aaugustyniak\ParamsCodecBundle\Codec\ParamCodec;
 use Psr\Log\InvalidArgumentException;
 
 /**
