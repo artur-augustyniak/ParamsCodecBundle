@@ -1,0 +1,28 @@
+{
+  "name": "aaugustyniak/params-codec-bundle",
+  "type": "symfony-bundle",
+  "description": "Symfony bundle for obfuscating/encryption routing params.",
+  "keywords": [],
+  "homepage": "http://aaugustyniak.pl",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Artur Augustyniak",
+      "email": "artur@aaugustyniak.pl",
+      "homepage": "http://aaugustyniak.pl",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=5.5.9",
+    "symfony/framework-bundle": "2.*||3.*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~5.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Aaugustyniak\\ParamsCodecBundle": ""
+    }
+  }
+}

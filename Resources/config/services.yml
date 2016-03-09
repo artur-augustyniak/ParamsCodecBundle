@@ -1,0 +1,17 @@
+services:
+  param_codec:
+    class: Aaugustyniak\ParamsCodecBundle\Codec\Impl\XorCodec
+    arguments: ["%secret%"]
+
+  param_crypt_annotation_driver:
+    class: Aaugustyniak\ParamsCodecBundle\Annotations\Driver\DecryptParamsDriver
+    tags:
+        -  { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+    arguments: ["@annotation_reader", "@param_codec"]
+
+  encrypt_params_twig_extension:
+    class: Aaugustyniak\ParamsCodecBundle\Twig\EncryptParamsExtension
+    public: false
+    tags:
+        - { name: twig.extension }
+    arguments: ["@param_codec", "@router"]

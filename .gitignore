@@ -1,0 +1,6 @@
+.idea
+netbeans
+vendor
+composer.phar
+composer.lock
+phpunit.xml
