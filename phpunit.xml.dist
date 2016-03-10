@@ -10,7 +10,7 @@
          stopOnFailure="false"
          syntaxCheck="false">
     <testsuites>
-        <testsuite name="ParamsCodecBundle Test Suite">
+        <testsuite name="ParamsCodecBundle Test Suite.">
             <directory suffix=".php">./Tests/</directory>
         </testsuite>
     </testsuites>
