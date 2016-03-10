@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/artur-augustyniak/ParamsCodecBundle.svg?branch=master)](https://travis-ci.org/artur-augustyniak/ParamsCodecBundle)
 # ParamsCodecBundle
 ------------------
 

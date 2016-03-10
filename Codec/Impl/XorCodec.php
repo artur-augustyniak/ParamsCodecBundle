@@ -38,10 +38,6 @@ class XorCodec implements ParamCodec
      */
     private $key;
 
-    /**
-     * @var string
-     */
-    private $seed;
 
     /**
      * XorCodec constructor.
@@ -49,17 +45,13 @@ class XorCodec implements ParamCodec
      */
     public function __construct($key)
     {
-        $this->key = $key;
+        if (!$key || !is_string($key)) {
+            throw new InvalidArgumentException(
+                '$key must be not null string'
+            );
+        }
+        $this->key = sha1($key);
     }
-
-    /**
-     * @param string $seed
-     */
-    public function setSeed($seed)
-    {
-        $this->seed = $seed;
-    }
-
 
     /**
      * @param $param
@@ -68,7 +60,7 @@ class XorCodec implements ParamCodec
      */
     public function encodeParam($param, $key = null)
     {
-        $key = null === $key ? $this->key : $key;
+        $key = null === $key ? $this->key : sha1($key);
         return bin2hex($this->xorString($param, $key));
     }
 
@@ -79,7 +71,7 @@ class XorCodec implements ParamCodec
      */
     public function decodeParam($param, $key = null)
     {
-        $key = null === $key ? $this->key : $key;
+        $key = null === $key ? $this->key : sha1($key);
         return $this->xorString(hex2bin($param), $key);
     }
 
@@ -92,7 +84,7 @@ class XorCodec implements ParamCodec
     private function xorString($text, $key)
     {
         if (!($text && $key)) {
-            throw new InvalidArgumentException("xorString prams cannot be null");
+            throw new InvalidArgumentException("en/decode prams cannot be null");
         }
         $outText = '';
         for ($i = 0; $i < strlen($text);) {

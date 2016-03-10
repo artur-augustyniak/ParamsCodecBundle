@@ -26,6 +26,7 @@
 namespace Aaugustyniak\ParamsCodecBundle\Tests\Codec;
 
 use PHPUnit_Framework_TestCase as TestCase;
+use Aaugustyniak\ParamsCodecBundle\Codec\Impl\XorCodec;
 
 /**
  * Class XorCodecTest
@@ -34,43 +35,137 @@ use PHPUnit_Framework_TestCase as TestCase;
  */
 class XorCodecTest extends TestCase
 {
+    const TEST_KEY = "some secret key";
+    const CUSTOM_TEST_KEY = "some other secret key";
+    const TEST_SECRET_VAL = "some secret value";
 
+    /**
+     * @var XorCodec
+     */
+    private $codec;
 
     /**
      * @before
      */
     public function beforeEachTest()
     {
-
+        $this->codec = new XorCodec(self::TEST_KEY);
     }
 
+    /**
+     * @test
+     * @expectedException \PSR\Log\InvalidArgumentException
+     */
+    public function
+    codec_constructor_expects_not_null()
+    {
+        new XorCodec(null);
+    }
 
     /**
-     * @afterClass
+     * @test
+     * @expectedException \PSR\Log\InvalidArgumentException
      */
-    public function afterAllTests()
+    public function
+    codec_constructor_expects_string()
     {
-
+        new XorCodec(new \DateTime());
     }
 
     /**
      * @test
      */
-    public function test()
+    public function
+    default_key_encryption_test()
     {
-        $this->assertNotNull(null);
-    }
+        $encrypted = $this->codec->encodeParam(self::TEST_SECRET_VAL);
+        $this->assertNotEquals(self::TEST_SECRET_VAL, $encrypted);
+        $decrypted = $this->codec->decodeParam($encrypted);
 
+        $this->assertEquals(self::TEST_SECRET_VAL, $decrypted);
+    }
 
     /**
      * @test
-     * @expectedException \Exception
-     * @expectedExceptionCode 222
      */
-    public function test_exception()
+    public function
+    custom_key_encryption_test()
     {
-
+        $encrypted = $this->codec->encodeParam(
+            self::TEST_SECRET_VAL,
+            self::CUSTOM_TEST_KEY
+        );
+        $this->assertNotEquals(self::TEST_SECRET_VAL, $encrypted);
+        $decrypted = $this->codec->decodeParam(
+            $encrypted,
+            self::CUSTOM_TEST_KEY
+        );
+        $this->assertEquals(self::TEST_SECRET_VAL, $decrypted);
     }
 
+    /**
+     * @test
+     */
+    public function
+    default_custom_mix_key_encryption_failure_test()
+    {
+        $encrypted = $this->codec->encodeParam(self::TEST_SECRET_VAL);
+        $decrypted = $this->codec->decodeParam(
+            $encrypted,
+            self::CUSTOM_TEST_KEY
+        );
+        $this->assertNotEquals(self::TEST_SECRET_VAL, $decrypted);
+    }
 
+    /**
+     * @test
+     */
+    public function
+    custom_default_mix_key_encryption_failure_test()
+    {
+        $encrypted = $this->codec->encodeParam(
+            self::TEST_SECRET_VAL,
+            self::CUSTOM_TEST_KEY
+        );
+        $decrypted = $this->codec->decodeParam(
+            $encrypted
+        );
+        $this->assertNotEquals(self::TEST_SECRET_VAL, $decrypted);
+    }
+
+    /**
+     * @test
+     */
+    public function
+    codec_with_custom_key_should_change_param_different_then_default_key()
+    {
+        $expected = $this->codec->encodeParam(
+            self::TEST_SECRET_VAL,
+            self::CUSTOM_TEST_KEY
+        );
+        $actual = $this->codec->encodeParam(
+            self::TEST_SECRET_VAL
+        );
+        $this->assertNotEquals($expected, $actual);
+    }
+
+    /**
+     * @test
+     * @expectedException \PSR\Log\InvalidArgumentException
+     */
+    public function
+    null_param_encode()
+    {
+        $this->codec->encodeParam(null);
+    }
+
+    /**
+     * @test
+     * @expectedException \PSR\Log\InvalidArgumentException
+     */
+    public function
+    null_param_decode()
+    {
+        $this->codec->decodeParam(null);
+    }
 }

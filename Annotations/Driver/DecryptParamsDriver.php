@@ -23,6 +23,7 @@
  */
 namespace Aaugustyniak\ParamsCodecBundle\Annotations\Driver;
 
+use Aaugustyniak\ParamsCodecBundle\Annotations\DecryptParams;
 use Aaugustyniak\ParamsCodecBundle\Codec\ParamCodec;
 use Doctrine\Common\Annotations\Reader;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
@@ -71,6 +72,7 @@ class DecryptParamsDriver
         $method = $object->getMethod($controller[1]);
 
         foreach ($this->reader->getMethodAnnotations($method) as $annotation) {
+
             if ($annotation instanceof DecryptParams) {
                 $route_params = $event->getRequest()->attributes->all()['_route_params'];
                 foreach ($route_params as $k => $v) {
