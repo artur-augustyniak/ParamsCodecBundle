@@ -81,7 +81,6 @@ class XorCodecTest extends TestCase
         $encrypted = $this->codec->encodeParam(self::TEST_SECRET_VAL);
         $this->assertNotEquals(self::TEST_SECRET_VAL, $encrypted);
         $decrypted = $this->codec->decodeParam($encrypted);
-
         $this->assertEquals(self::TEST_SECRET_VAL, $decrypted);
     }
 

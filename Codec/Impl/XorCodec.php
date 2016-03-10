@@ -1,4 +1,5 @@
 <?php
+
 /*
  * The MIT License (MIT)
  *
@@ -72,7 +73,11 @@ class XorCodec implements ParamCodec
     public function decodeParam($param, $key = null)
     {
         $key = null === $key ? $this->key : sha1($key);
-        return $this->xorString(hex2bin($param), $key);
+        if (version_compare(PHP_VERSION, '5.4.0') >= 0) {
+            return $this->xorString(hex2bin($param), $key);
+        } else {
+            return $this->xorString(pack("H*", $param), $key);
+        }
     }
 
     /**
@@ -94,4 +99,5 @@ class XorCodec implements ParamCodec
         }
         return $outText;
     }
+
 }
