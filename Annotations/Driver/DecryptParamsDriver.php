@@ -67,16 +67,16 @@ class DecryptParamsDriver
         if (!is_array($controller = $event->getController())) {
             return;
         }
+        if ('GET' === $event->getRequest()->getMethod()) {
+            $object = new \ReflectionObject($controller[0]);
+            $method = $object->getMethod($controller[1]);
+            foreach ($this->reader->getMethodAnnotations($method) as $annotation) {
 
-        $object = new \ReflectionObject($controller[0]);
-        $method = $object->getMethod($controller[1]);
-
-        foreach ($this->reader->getMethodAnnotations($method) as $annotation) {
-
-            if ($annotation instanceof DecryptParams) {
-                $route_params = $event->getRequest()->attributes->all()['_route_params'];
-                foreach ($route_params as $k => $v) {
-                    $event->getRequest()->attributes->set($k, $this->codec->decodeParam($v));
+                if ($annotation instanceof DecryptParams) {
+                    $route_params = $event->getRequest()->attributes->all()['_route_params'];
+                    foreach ($route_params as $k => $v) {
+                        $event->getRequest()->attributes->set($k, $this->codec->decodeParam($v));
+                    }
                 }
             }
         }
