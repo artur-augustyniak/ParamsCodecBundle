@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/artur-augustyniak/ParamsCodecBundle.svg?branch=master)]
 (https://travis-ci.org/artur-augustyniak/ParamsCodecBundle)
 
-Provides a simple Symfony 2/3 Bundle to encode (RSA) routing parameters.
+Provides a simple Symfony 2/3 Bundle to AES encrypt routing parameters.
 
 ## Installing via Composer
 
@@ -35,9 +35,8 @@ This bundle registers ```param_codec``` service and
 twig extension providing two functions in relation with standard 
 Twig url creation functions.
 
-In default implementation ```ParamCodec``` interface is backed by RSA encryption.
-ParamCodec ```secret``` key from parameters.yml is here only for backward compatibility with unsafe XorCodec.
-This param do not have any influence on encryption process with RsaCodec.
+In default implementation ParamCodec interface is backed by AesCodec. 
+ParamCodec uses secret passphrase from parameters.yml.
 
 ### DefaultController.php
 ```php
