@@ -2,7 +2,7 @@
 /*
 * The MIT License (MIT)
 *
-* Copyright (c) 2016 Artur Augustyniak
+* Copyright (c) 2017 Artur Augustyniak
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -26,22 +26,21 @@
 namespace Aaugustyniak\ParamsCodecBundle\Tests\Codec;
 
 use PHPUnit_Framework_TestCase as TestCase;
-use Aaugustyniak\ParamsCodecBundle\Codec\Impl\XorCodec;
+use Aaugustyniak\ParamsCodecBundle\Codec\Impl\RsaCodec;
 
 /**
- * @deprecated since version 1.1.0
- * Class XorCodecTest
+ * Class RsaCodecTest
  * @author Artur Augustyniak <artur@aaugustyniak.pl>
  * @package Aaugustyniak\ParamsCodecBundle\Tests\Codec
  */
-class XorCodecTest extends TestCase
+class RsaCodecTest extends TestCase
 {
     const TEST_KEY = "some secret key";
     const CUSTOM_TEST_KEY = "some other secret key";
     const TEST_SECRET_VAL = "some secret value";
 
     /**
-     * @var XorCodec
+     * @var RsaCodec
      */
     private $codec;
 
@@ -50,7 +49,7 @@ class XorCodecTest extends TestCase
      */
     public function beforeEachTest()
     {
-        $this->codec = new XorCodec(self::TEST_KEY);
+        $this->codec = new RsaCodec(self::TEST_KEY);
     }
 
     /**
@@ -60,7 +59,7 @@ class XorCodecTest extends TestCase
     public function
     codec_constructor_expects_not_null()
     {
-        new XorCodec(null);
+        new RsaCodec(null);
     }
 
     /**
@@ -70,7 +69,7 @@ class XorCodecTest extends TestCase
     public function
     codec_constructor_expects_string()
     {
-        new XorCodec(new \DateTime());
+        new RsaCodec(new \DateTime());
     }
 
     /**
@@ -103,52 +102,11 @@ class XorCodecTest extends TestCase
         $this->assertEquals(self::TEST_SECRET_VAL, $decrypted);
     }
 
-    /**
-     * @test
-     */
-    public function
-    default_custom_mix_key_encryption_failure_test()
-    {
-        $encrypted = $this->codec->encodeParam(self::TEST_SECRET_VAL);
-        $decrypted = $this->codec->decodeParam(
-            $encrypted,
-            self::CUSTOM_TEST_KEY
-        );
-        $this->assertNotEquals(self::TEST_SECRET_VAL, $decrypted);
-    }
 
     /**
      * @test
+     * @expectedException \PSR\Log\InvalidArgumentException
      */
-    public function
-    custom_default_mix_key_encryption_failure_test()
-    {
-        $encrypted = $this->codec->encodeParam(
-            self::TEST_SECRET_VAL,
-            self::CUSTOM_TEST_KEY
-        );
-        $decrypted = $this->codec->decodeParam(
-            $encrypted
-        );
-        $this->assertNotEquals(self::TEST_SECRET_VAL, $decrypted);
-    }
-
-    /**
-     * @test
-     */
-    public function
-    codec_with_custom_key_should_change_param_different_then_default_key()
-    {
-        $expected = $this->codec->encodeParam(
-            self::TEST_SECRET_VAL,
-            self::CUSTOM_TEST_KEY
-        );
-        $actual = $this->codec->encodeParam(
-            self::TEST_SECRET_VAL
-        );
-        $this->assertNotEquals($expected, $actual);
-    }
-
     public function
     null_param_encode()
     {

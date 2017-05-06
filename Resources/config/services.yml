@@ -1,6 +1,6 @@
 services:
   param_codec:
-    class: Aaugustyniak\ParamsCodecBundle\Codec\Impl\XorCodec
+    class: Aaugustyniak\ParamsCodecBundle\Codec\Impl\RsaCodec
     arguments: ["%secret%"]
 
   param_crypt_annotation_driver:

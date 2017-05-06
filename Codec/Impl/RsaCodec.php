@@ -3,7 +3,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Artur Augustyniak
+ * Copyright (c) 2017 Artur Augustyniak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,21 +28,26 @@ use Aaugustyniak\ParamsCodecBundle\Codec\ParamCodec;
 use Psr\Log\InvalidArgumentException;
 
 /**
- * @deprecated since version 1.1.0
- * Class XorCodec
+ * Class RsaCodec
  * @package Aaugustyniak\ParamsCodecBundle\Codec\Impl
  */
-class XorCodec implements ParamCodec
+class RsaCodec implements ParamCodec
 {
-
+    
     /**
      * @var string
      */
-    private $key;
+    private $privKey;
+    
+    
+    /**
+     * @var string
+     */
+    private $pubKey;
 
 
     /**
-     * XorCodec constructor.
+     * RsaCodec constructor.
      * @param string $key
      */
     public function __construct($key)
@@ -52,7 +57,23 @@ class XorCodec implements ParamCodec
                 '$key must be not null string'
             );
         }
-        $this->key = sha1($key);
+        
+        // Create the keypair
+        $res=openssl_pkey_new(array(
+            "digest_alg" => "sha512",
+            "private_key_bits" => 1024,
+            "private_key_type" => OPENSSL_KEYTYPE_RSA,
+        ));
+
+        // Get private key
+        openssl_pkey_export($res, $this->privKey);
+
+
+        // Get public key
+        $keys=openssl_pkey_get_details($res);
+        $this->pubKey=$keys["key"];
+
+        
     }
 
     /**
@@ -62,8 +83,12 @@ class XorCodec implements ParamCodec
      */
     public function encodeParam($param, $key = null)
     {
-        $key = null === $key ? $this->key : sha1($key);
-        return bin2hex($this->xorString($param, $key));
+        if (!$param) {
+            throw new InvalidArgumentException("en/decode prams cannot be null");
+        }
+        $crypted = "";
+        openssl_public_encrypt($param, $crypted, $this->pubKey);
+        return bin2hex($crypted);
     }
 
     /**
@@ -73,32 +98,16 @@ class XorCodec implements ParamCodec
      */
     public function decodeParam($param, $key = null)
     {
-        $key = null === $key ? $this->key : sha1($key);
-        if (version_compare(PHP_VERSION, '5.4.0') >= 0) {
-            return $this->xorString(hex2bin($param), $key);
-        } else {
-            return $this->xorString(pack("H*", $param), $key);
-        }
-    }
-
-    /**
-     * @param $text
-     * @param $key
-     * @return string
-     * @throws InvalidArgumentException
-     */
-    private function xorString($text, $key)
-    {
-        if (!($text && $key)) {
+        if (!$param) {
             throw new InvalidArgumentException("en/decode prams cannot be null");
         }
-        $outText = '';
-        for ($i = 0; $i < strlen($text);) {
-            for ($j = 0; ($j < strlen($key) && $i < strlen($text)); $j++, $i++) {
-                $outText .= $text{$i} ^ $key{$j};
-            }
+        $decrypted = "";    
+        if (version_compare(PHP_VERSION, '5.4.0') >= 0) {
+            openssl_private_decrypt(hex2bin($param), $decrypted, $this->privKey);
+        } else {
+            openssl_private_decrypt(pack("H*", $param), $decrypted, $this->privKey);
         }
-        return $outText;
+        return $decrypted;
     }
-
+    
 }
