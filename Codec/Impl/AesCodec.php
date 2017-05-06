@@ -85,14 +85,8 @@ class AesCodec implements ParamCodec {
         if (!$param) {
             throw new InvalidArgumentException("en/decode prams cannot be null");
         }
-        $key = null === $key ? $this->key : sha1($key);
-        
-        if (version_compare(PHP_VERSION, '5.4.0') >= 0) {
-            $encrypted = hex2bin($param);
-        } else {
-            $encrypted = pack("H*", $param);
-        }
-        
+        $key = null === $key ? $this->key : sha1($key);    
+        $encrypted = hex2bin($param);
         $decrypted = openssl_decrypt(
                 $encrypted,
                 self::METHOD,
