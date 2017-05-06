@@ -46,8 +46,7 @@ class AesCodec implements ParamCodec {
      * AesCodec constructor.
      * @param string $key
      */
-    public function __construct($key) 
-    {
+    public function __construct($key) {
         if (!$key || !is_string($key)) {
             throw new InvalidArgumentException(
             '$key must be not null string'
@@ -61,18 +60,13 @@ class AesCodec implements ParamCodec {
      * @param $key
      * @return string
      */
-    public function encodeParam($param, $key = null)
-    { 
+    public function encodeParam($param, $key = null) {
         if (!$param) {
             throw new InvalidArgumentException("en/decode prams cannot be null");
         }
         $key = null === $key ? $this->key : sha1($key);
         $encrypted = openssl_encrypt(
-                $param,
-                self::METHOD,
-                $key,
-                OPENSSL_RAW_DATA,
-                self::IV);
+                $param, self::METHOD, $key, OPENSSL_RAW_DATA, self::IV);
         return bin2hex($encrypted);
     }
 
@@ -85,17 +79,12 @@ class AesCodec implements ParamCodec {
         if (!$param) {
             throw new InvalidArgumentException("en/decode prams cannot be null");
         }
-        $key = null === $key ? $this->key : sha1($key);    
+        $key = null === $key ? $this->key : sha1($key);
         $encrypted = hex2bin($param);
         $decrypted = openssl_decrypt(
-                $encrypted,
-                self::METHOD,
-                $key,
-                OPENSSL_RAW_DATA,
-                self::IV
-                );
+                $encrypted, self::METHOD, $key, OPENSSL_RAW_DATA, self::IV
+        );
         return $decrypted;
     }
-
 
 }
